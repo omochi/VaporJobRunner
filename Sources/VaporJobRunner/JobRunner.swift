@@ -143,8 +143,9 @@ public final class JobRunner {
             guard !sj.isRunning,
                   sj.next <= now else { continue }
             sj.isRunning = true
-            _ = sj.job.dispatch(
+            _ = sj.job.dispatch0(
                 runner: self,
+                id: sj.id,
                 completion: { [weak self] in
                     self?.onScheduledJobComplete(
                         id: sj.id,
@@ -194,12 +195,15 @@ public final class JobRunner {
 }
 
 extension JobProtocol {
-    func dispatch(
+    // open existential
+    func dispatch0(
         runner: JobRunner,
+        id: UUID? = nil,
         completion: (() -> Void)? = nil
     ) -> UUID {
         runner.dispatch0(
             job: self,
+            id: id,
             completion: completion
         )
     }
